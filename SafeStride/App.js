@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import axios from "axios";
-// import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useEffect } from 'react';
-// const [photo, setPhoto] = useState < any > (null);
 import { TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { NetworkInfo } from 'react-native-network-info';
@@ -33,23 +31,18 @@ export default function App() {
       } else if (await Network.getIpAddressAsync() === "100.67.149.162") {
         const response = await axios.get("http://100.67.199.63:5002/get-hazard", {
           hazard: hazard
-
         });
 
-
-        // console.log(response.data.hazard)
         if (response.data.hazard) {
           const currentTime = Date.now();
 
           console.log(currentTime)
           console.log(lastMessageTime)
-          // Always send message if hazard contains '2'
           if (response.data.hazard[1] < 1.0) {
             console.log("less than one meter calls")
             sendMessage(response.data.hazard);
             lastMessageTime = currentTime;
           } else if (currentTime - lastMessageTime >= 7000) {
-            // Throttle to 5 seconds for other hazards
             console.log("10 sec passed")
 
             sendMessage(response.data.hazard);
@@ -60,17 +53,15 @@ export default function App() {
       }
     }, 2000);
 
-    // Cleanup on unmount
     return () => clearInterval(intervalId);
-  });
+  }
+  );
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
@@ -124,7 +115,6 @@ export default function App() {
           buzz_count = 10;
         }
       }
-      // send right buzz
     }
     else if (hazard === "right") {
       if (await Network.getIpAddressAsync() == "100.66.7.79") {
@@ -147,7 +137,7 @@ export default function App() {
         Haptics.impactAsync(hapticStyle);
         count++;
         if (count >= buzz_count) {
-          clearInterval(interval); // Stop after 5 repetitions
+          clearInterval(interval);
         }
       }, 50);
     }
@@ -156,7 +146,6 @@ export default function App() {
 
   const sendPhotoToServer = async () => {
     try {
-
       if (cameraRef.current) {
         const options = {
           quality: 1,
@@ -164,7 +153,6 @@ export default function App() {
           exif: false,
         };
         const takedPhoto = await cameraRef.current.takePictureAsync(options);
-
         const formData = new FormData();
         formData.append('photo', {
           uri: takedPhoto.uri,

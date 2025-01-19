@@ -1,6 +1,9 @@
 import cv2
 from ultralytics import YOLO
 import numpy as np
+import math
+from PIL import Image
+from io import BytesIO
 
 hazards = {
     ("person", 0.45),
@@ -25,22 +28,21 @@ hazards = {
     ("handbag", 0.3),
 }
 
+
 # Load the model
 yolo = YOLO("yolov8s.pt")
 
 # Load the video capture
 # videoCap = cv2.VideoCapture(0)
 
-frame_width = 1170  # pix
+frame_width = 1864  # pix
 horizontal_fov = 69  # degrees
-focal_length = 0.26  # m
+# focal_length = 0.026  # mm
 
 
 def get_distance(object_width_px, real_width):
-
+    focal_length = 3226
     distance_m = (real_width * focal_length) / object_width_px
-    print("width in pixles", object_width_px)
-    # distance_m = distance_mm / 1000
 
     return distance_m
 
@@ -72,25 +74,19 @@ def get_angle(x1, x2):
     object_center_x = (x1 + x2) / 2
     frame_center_x = frame_width / 2
     horizontal_offset_px = object_center_x - frame_center_x
-    # pixels_per_degree = frame_width / horizontal_fov
-    # angle_deg = horizontal_offset_px / pixels_per_degree
+    pixels_per_degree = frame_width / horizontal_fov
+    angle_deg = horizontal_offset_px / pixels_per_degree
 
-    return horizontal_offset_px
-    # return angle_deg
+    return angle_deg
 
 
 def get_hazards(file_bytes):
-    # ret, frame = videoCap.read()
-    # frame = cv2.imread(img)
-    # Convert bytes to a NumPy array
+
     np_img = np.frombuffer(file_bytes, np.uint8)
 
     # Decode the NumPy array into an OpenCV image
     frame = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-    # cv2.imshow(image)
-    # frame = cv2.imread("testimg.jpg")
-    # if not ret:
-    #    continue
+  
     results = yolo.track(frame, stream=True)
 
     for result in results:
@@ -137,29 +133,26 @@ def get_hazards(file_bytes):
                 # put the class name and confidence on the image
                 cv2.putText(
                     frame,
-                    # f"{classes_names[int(box.cls[0])]} {box.conf[0]:.2f}",
-                    f"{classes_names[int(box.cls[0])]} {dist:.2f}",
+                    f"{classes_names[int(box.cls[0])]} {dist:.2f} {x1, y1, x2, y2}",
                     (x1, y1),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     1,
                     colour,
                     2,
                 )
-                print(type(frame), frame.dtype, frame.shape)
-                cv2.imshow("frame", frame)
-                input()
+
 
     if hazard_dict:
         closest_hazard = min(hazard_dict, key=lambda x: x[1])
         if closest_hazard:
-            if (closest_hazard[2][0] + closest_hazard[2][2]) / 2 < 1179:
+            if (closest_hazard[2][0] + closest_hazard[2][2]) / 2 < frame_width / 2:
 
                 print(
                     f"Closest hazard: {closest_hazard[0]} at {closest_hazard[1]}meters, {closest_hazard[3]} degrees to the left"
                 )
                 return (
                     closest_hazard[0],
-                    f"{closest_hazard[1]:.4f}",
+                    f"{closest_hazard[1]:.1f}",
                     closest_hazard[2],
                     "left",
                     f"{closest_hazard[3]:.1f}",
@@ -171,23 +164,16 @@ def get_hazards(file_bytes):
                 )
                 return (
                     closest_hazard[0],
-                    f"{closest_hazard[1]:.4f}",
+                    f"{closest_hazard[1]:.1f}",
                     closest_hazard[2],
                     "right",
                     f"{closest_hazard[3]:.1f}",
                 )
         else:
             # maybe return general info if there's no hazard
-            return None, None, None
-    # show the image
-    # cv2.imshow("frame", frame)
+            return None
 
     # break the loop if 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord("q"):
-        return
+        return None
 
-
-# get_hazards("testimg.jpg")
-# release the video capture and destroy all windows
-# videoCap.release()
-# cv2.destroyAllWindows()

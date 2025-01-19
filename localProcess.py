@@ -5,7 +5,6 @@ hazard = None
 
 app = Flask(__name__)
 
-# Store text data
 text_data = "Hello from Flask!"
 
 
@@ -20,12 +19,7 @@ def set_photo():
     global hazard
     file = request.files["photo"]
 
-    # Read the image file into memory
     file_bytes = file.read()
-
-    # data = request.get_json()
-    # print(data)
-    # text_data = data.get("text", "")
     hazard = test.get_hazards(file_bytes)
     return jsonify({"message": "Photo updated successfully!", "hazard": hazard})
 
@@ -39,17 +33,10 @@ def get_hazard():
 @app.route("/set-text", methods=["POST"])
 def set_text():
     global text_data
-    # file = request.files["photo"]
-
-    # Read the image file into memory
-    # file_bytes = file.read()
 
     data = request.get_json()
-    # print(data)
     text_data = data.get("text", "")
     print(text_data)
-    # return text_data
-    # test.get_hazards(file_bytes)
     return jsonify({"message": "Text updated successfully!"})
 
 

@@ -14,10 +14,10 @@ print(os.getcwd())
 # input_image = "img.jpeg"  # @param {type : 'string'}
 input_image = "testimg.jpg"  # @param {type : 'string'}
 img = Image.open(input_image)
-# img = Image.open(
-#     "/Users/maanikgogna/Local Desktop/Summer23Redemption/parrot/parrot/model/img.jpeg"
-# )
-# img.show()
+img = Image.open(
+    "/Users/maanikgogna/Local Desktop/Summer23Redemption/parrot/parrot/model/img.jpeg"
+)
+img.show()
 
 response = model.generate_content(
     [
