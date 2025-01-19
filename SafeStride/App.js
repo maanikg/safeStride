@@ -42,7 +42,7 @@ export default function App() {
             console.log("less than one meter calls")
             sendMessage(response.data.hazard);
             lastMessageTime = currentTime;
-          } else if (currentTime - lastMessageTime >= 7000) {
+          } else if (currentTime - lastMessageTime >= 5000) {
             console.log("10 sec passed")
 
             sendMessage(response.data.hazard);
