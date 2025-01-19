@@ -14,8 +14,7 @@ We used Flask to set up a server running on a computer that could communicate wi
 Accurately predicting the distance and angle of objects, and establishing communication between the server and the devices attached to the user.
 
 ## What we learned
----
-How to use machine learning models to classify and predict objects, and how to set up a server to communicate with multiple devices.
+Simultaneous socket communication between multiple processes, while still maintaining identity of each process, helping us to distribute tasks effectively. Additionally, we learned how to ensure short turn-around times for the server to process images and send alerts to the user.
 
 ## Accomplishments that we're proud of
 Creating a fully working app that helps visually impaired people navigate the world more safely. 
