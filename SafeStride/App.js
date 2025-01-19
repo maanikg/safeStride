@@ -88,9 +88,10 @@ export default function App() {
       message = `${hazardName}, ${currentDistance} metres away to your ${hazard[3]}`;
     }
 
-    const voices = await Speech.getVoices();
-    const britishVoice = voices.find(voice => voice.lang === 'en-GB');
-    Speech.speak(message, { voice: britishVoice })
+    // const voices = await Speech.getVoices();
+    // const britishVoice = voices.find(voice => voice.lang === 'en-GB');
+    Speech.speak(message)
+    // , { voice: britishVoice }
 
     previousDistances[hazardName] = currentDistance;
   };
@@ -166,7 +167,6 @@ export default function App() {
           },
         });
 
-        console.log(response)
         console.log(response.data.hazard)
         return response.data.hazard
       }
@@ -189,7 +189,7 @@ export default function App() {
     }
   };
 
-  alRef.current = setInterval(sendPhotoToServer, 2000);
+  // cameraRef.current = setInterval(sendPhotoToServer, 2000);
 
 
   return (
